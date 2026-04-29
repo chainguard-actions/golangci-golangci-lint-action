@@ -1,6 +1,12 @@
 # golangci/golangci-lint-action
 
-Hardened GitHub Action by [Chainguard](https://www.chainguard.dev).
+Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/golangci/golangci-lint-action](https://github.com/golangci/golangci-lint-action).
+
+## Versions
+
+| Version | Tag | Upstream commit |
+|---------|-----|-----------------|
+| v9.2.0 | [`v9.2.0`](https://github.com/chainguard-actions/golangci-lint-action/tree/v9.2.0) | — |
 
 ## Privacy
 
