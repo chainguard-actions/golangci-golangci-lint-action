@@ -1,5 +1,7 @@
 # golangci/golangci-lint-action
 
+Official GitHub Action for golangci-lint from its authors
+
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/golangci/golangci-lint-action](https://github.com/golangci/golangci-lint-action).
 
 ## Versions
