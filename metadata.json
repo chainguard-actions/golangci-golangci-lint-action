@@ -2,5 +2,6 @@
   "owner": "golangci",
   "name": "golangci-lint-action",
   "visibility": "internal",
-  "description": "Official GitHub Action for golangci-lint from its authors"
+  "description": "Official GitHub Action for golangci-lint from its authors",
+  "block_publish": false
 }
