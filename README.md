@@ -8,7 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit |
 |---------|-----|-----------------|
-| v9.2.0 | [`v9.2.0`](https://github.com/chainguard-actions/golangci--golangci-lint-action/tree/v9.2.0) | — |
+| v9.2.0 | [`v9.2.0`](https://github.com/chainguard-actions/golangci-golangci-lint-action/tree/v9.2.0) | — |
 
 ## Privacy
 
