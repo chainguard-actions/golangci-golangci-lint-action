@@ -1,0 +1,27 @@
+name: Test version input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: '1.21'
+      - id: action
+        uses: .
+        with:
+          version: v1.64.8
+          args: --config ${{ github.workspace }}/actions/hardened/golangci--golangci-lint-action/v8.0.0/tests/fixtures/go-project/.golangci.yml ./...
+          working-directory: ${{ github.workspace }}/actions/hardened/golangci--golangci-lint-action/v8.0.0/tests/fixtures/go-project
+          skip-cache: 'true'
+          verify: 'false'
+      - name: Assert lint passed with specific version
+        run: |
+          echo "golangci-lint completed successfully with specified version"
+          echo "PASS"
