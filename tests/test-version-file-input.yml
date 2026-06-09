@@ -1,0 +1,23 @@
+name: Test version-file input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: action
+        uses: .
+        with:
+          version-file: actions/hardened/golangci--golangci-lint-action/v9.2.1/tests/fixtures/goproject/.golangci-lint-version
+          install-only: 'true'
+          skip-cache: 'true'
+      - name: Assert golangci-lint is installed with version from file
+        run: |
+          VERSION=$(golangci-lint --version 2>&1 || true)
+          echo "golangci-lint version output: $VERSION"
+          if ! echo "$VERSION" | grep -q "2.1.6"; then
+            echo "FAIL: expected golangci-lint version 2.1.6 (from version-file) to be installed"
+            exit 1
+          fi
+          echo "PASS"

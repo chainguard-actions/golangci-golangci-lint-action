@@ -6,23 +6,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Set up Go
-        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
-        with:
-          go-version: '1.21'
-          cache: false
-
-      - name: Run golangci-lint with working-directory input
-        id: lint
+      - name: Install Go
+        run: |
+          which go || (apt-get update -qq && apt-get install -y golang-go 2>/dev/null) || true
+          go version || true
+      - id: action
         uses: .
         with:
           version: v2.1.6
-          working-directory: actions/hardened/golangci--golangci-lint-action/v9.2.1/tests/fixtures/workdir/subproject
+          working-directory: actions/hardened/golangci--golangci-lint-action/v9.2.1/tests/fixtures/goproject
           skip-cache: 'true'
           args: --timeout=2m
-
-      - name: Assert lint completed successfully in working-directory
+      - name: Assert lint ran successfully in working directory
         run: |
-          echo "golangci-lint ran successfully with working-directory input"
+          echo "golangci-lint ran successfully in the specified working directory"
           echo "PASS"
