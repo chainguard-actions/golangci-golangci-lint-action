@@ -6,20 +6,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      - name: Set up Go
-        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
-        with:
-          go-version: '1.21'
-      - name: Copy fixture Go project to workspace root
+      - name: Install Go
         run: |
-          cp -r $GITHUB_WORKSPACE/actions/hardened/golangci--golangci-lint-action/v8.0.0/tests/fixtures/goproject/. $GITHUB_WORKSPACE/
-      - id: action
+          if ! command -v go &>/dev/null; then
+            apt-get update -qq && apt-get install -y golang-go
+          fi
+          go version
+      - id: lint
         uses: .
         with:
+          args: "--config actions/hardened/golangci--golangci-lint-action/v8.0.0/tests/fixtures/goproject/.golangci.yml ./..."
           skip-cache: 'true'
-          verify: 'false'
-          args: --timeout=60s
-      - name: Assert lint ran successfully
+          working-directory: actions/hardened/golangci--golangci-lint-action/v8.0.0/tests/fixtures/goproject
+      - name: Assert lint completed successfully
         run: |
-          echo "golangci-lint ran successfully with default settings"
+          echo "Lint step completed without error"
           echo "PASS"
