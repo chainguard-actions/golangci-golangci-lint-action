@@ -1,6 +1,6 @@
 # golangci/golangci-lint-action
 
-Official golangci-lint action with line-attached annotations for found issues, caching, and parallel execution.
+Official golangci-lint action with line-attached annotations for found issues, caching and parallel execution.
 
 Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at [https://github.com/golangci/golangci-lint-action](https://github.com/golangci/golangci-lint-action).
 
