@@ -4,25 +4,25 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Set up Go
-        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
-        with:
-          go-version: '1.21'
-          cache: false
-
-      - name: Run golangci-lint with version-file input
-        id: lint
+      - id: action
         uses: .
         with:
-          version-file: actions/hardened/golangci--golangci-lint-action/v9.2.1/tests/fixtures/version-file/.golangci-lint-version
-          working-directory: actions/hardened/golangci--golangci-lint-action/v9.2.1/tests/fixtures/version-file
+          version-file: tests/fixtures/.golangci-lint-version
+          install-only: 'true'
           skip-cache: 'true'
-          args: --timeout=2m
-
-      - name: Assert lint completed successfully using version-file
+          verify: 'false'
+      - name: Assert golangci-lint is installed from version-file
         run: |
-          echo "golangci-lint ran successfully using version-file input"
+          which golangci-lint || (echo "FAIL: golangci-lint not found in PATH" && exit 1)
+          VERSION=$(golangci-lint --version 2>&1 || true)
+          echo "installed version: $VERSION"
+          if ! echo "$VERSION" | grep -q "1.64.8"; then
+            echo "FAIL: expected version 1.64.8 from version-file but got: $VERSION"
+            exit 1
+          fi
           echo "PASS"

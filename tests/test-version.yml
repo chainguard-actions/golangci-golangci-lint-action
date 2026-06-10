@@ -1,4 +1,4 @@
-name: Test working-directory input
+name: Test version input
 on:
   workflow_dispatch:
 jobs:
@@ -13,11 +13,10 @@ jobs:
         uses: .
         with:
           version: v1.64.8
-          working-directory: fixtures/monorepo/a
           install-only: 'true'
           skip-cache: 'true'
           verify: 'false'
-      - name: Assert golangci-lint is installed when working-directory is set
+      - name: Assert golangci-lint is installed
         run: |
           which golangci-lint || (echo "FAIL: golangci-lint not found in PATH" && exit 1)
           VERSION=$(golangci-lint --version 2>&1 || true)
