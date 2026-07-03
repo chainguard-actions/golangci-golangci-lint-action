@@ -1,0 +1,29 @@
+name: Test working-directory input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Go
+        run: |
+          if command -v go &>/dev/null; then
+            echo "Go already available: $(go version)"
+          else
+            echo "Go not found, installing..."
+            curl -fsSL https://go.dev/dl/go1.21.13.linux-amd64.tar.gz -o /tmp/go.tar.gz
+            sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+            echo "/usr/local/go/bin" >> "$GITHUB_PATH"
+          fi
+      - id: action
+        uses: .
+        with:
+          version: latest
+          working-directory: tests/fixtures/minimal
+          skip-cache: 'true'
+          verify: 'false'
+          args: '--timeout=5m'
+      - name: Assert lint ran successfully
+        run: |
+          echo "PASS: golangci-lint completed without error in working-directory"

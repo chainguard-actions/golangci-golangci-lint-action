@@ -1,0 +1,49 @@
+name: Test version-file input
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Go
+        run: |
+          if command -v go &>/dev/null; then
+            echo "Go already available: $(go version)"
+          else
+            curl -fsSL https://go.dev/dl/go1.21.13.linux-amd64.tar.gz -o /tmp/go.tar.gz
+            sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+            echo "/usr/local/go/bin" >> "$GITHUB_PATH"
+          fi
+      - id: action
+        uses: .
+        with:
+          version-file: tests/fixtures/.golangci-lint-version
+          install-only: 'true'
+          skip-cache: 'true'
+          verify: 'false'
+      - name: Assert golangci-lint is installed with version from file
+        run: |
+          # Reload PATH from GITHUB_PATH
+          if [ -f "$GITHUB_PATH" ]; then
+            while IFS= read -r dir; do
+              export PATH="$dir:$PATH"
+            done < "$GITHUB_PATH"
+          fi
+          if command -v golangci-lint &>/dev/null; then
+            echo "golangci-lint found in PATH: $(command -v golangci-lint)"
+            echo "golangci-lint version: $(golangci-lint --version)"
+            echo "PASS"
+            exit 0
+          fi
+          # Check common install locations
+          for loc in "$HOME/.local/bin/golangci-lint" "$HOME/go/bin/golangci-lint" "/usr/local/bin/golangci-lint" "/usr/bin/golangci-lint"; do
+            if [ -x "$loc" ]; then
+              echo "golangci-lint found at: $loc"
+              echo "golangci-lint version: $($loc --version)"
+              echo "PASS"
+              exit 0
+            fi
+          done
+          echo "FAIL: golangci-lint binary not found anywhere"
+          exit 1
