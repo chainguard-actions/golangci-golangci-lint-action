@@ -1,0 +1,10 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - govet
+    - errcheck
+
+output:
+  show-stats: false

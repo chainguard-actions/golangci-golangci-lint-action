@@ -1,4 +1,4 @@
-name: Test version-file input
+name: Test custom args
 on:
   workflow_dispatch:
 jobs:
@@ -13,16 +13,16 @@ jobs:
           go-version: '1.21'
           cache: false
 
-      - name: Run golangci-lint using version-file
+      - name: Run golangci-lint with custom args (specific linters and timeout)
         id: lint
         uses: .
         with:
-          version-file: 'tests/fixtures/version-file-go/.golangci-lint-version'
-          working-directory: tests/fixtures/version-file-go
+          version: 'v2.1'
+          working-directory: tests/fixtures/simple-go
           skip-cache: 'true'
-          args: '--timeout=60s'
+          args: '--timeout=60s --enable=govet'
 
-      - name: Assert lint completed successfully with version-file
+      - name: Assert lint completed with custom args
         run: |
-          echo "golangci-lint action completed successfully using version-file"
+          echo "golangci-lint completed with custom args"
           echo "PASS"
