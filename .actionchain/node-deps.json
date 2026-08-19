@@ -1,0 +1,13 @@
+{
+  "status": "self_contained",
+  "entries": [
+    {
+      "path": "dist/run/index.js",
+      "status": "self_contained"
+    },
+    {
+      "path": "dist/post_run/index.js",
+      "status": "self_contained"
+    }
+  ]
+}

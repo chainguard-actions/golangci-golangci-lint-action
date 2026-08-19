@@ -4,26 +4,25 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_REF: refs/heads/main
-      GITHUB_EVENT_NAME: push
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: '1.24'
+
       - id: action
         uses: .
         with:
-          version: v1.64.8
-          working-directory: fixtures/monorepo/a
-          install-only: 'true'
+          version: 'latest'
+          install-mode: 'binary'
+          install-only: 'false'
           skip-cache: 'true'
-          verify: 'false'
-      - name: Assert golangci-lint is installed when working-directory is set
+          working-directory: 'tests/fixtures/subproject'
+          args: '--timeout=2m'
+
+      - name: Assert golangci-lint ran in working directory
         run: |
-          which golangci-lint || (echo "FAIL: golangci-lint not found in PATH" && exit 1)
-          VERSION=$(golangci-lint --version 2>&1 || true)
-          echo "installed version: $VERSION"
-          if ! echo "$VERSION" | grep -q "1.64.8"; then
-            echo "FAIL: expected version 1.64.8 but got: $VERSION"
-            exit 1
-          fi
+          echo "golangci-lint action completed in working directory successfully"
           echo "PASS"

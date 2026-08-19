@@ -1,0 +1,46 @@
+name: Test install-mode none
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Install Go
+        run: |
+          export GOVERSION=1.24.3
+          curl -sSfL "https://go.dev/dl/go${GOVERSION}.linux-amd64.tar.gz" -o /tmp/go.tar.gz
+          sudo rm -rf /usr/local/go
+          sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+          echo "/usr/local/go/bin" >> $GITHUB_PATH
+      - name: Pre-install golangci-lint manually
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b /usr/local/bin latest
+      - name: Prepare test Go project
+        run: |
+          mkdir -p /tmp/lint-none-test
+          cat > /tmp/lint-none-test/go.mod <<'EOF'
+          module example.com/nonemodetest
+
+          go 1.24.0
+          EOF
+          cat > /tmp/lint-none-test/main.go <<'EOF'
+          package main
+
+          import "fmt"
+
+          func main() {
+            fmt.Println("install-mode none test")
+          }
+          EOF
+      - id: action
+        uses: .
+        with:
+          install-mode: none
+          working-directory: /tmp/lint-none-test
+          skip-cache: 'true'
+          verify: 'false'
+          args: '--timeout=5m'
+      - name: Assert action succeeded with install-mode none
+        run: |
+          echo "PASS: golangci-lint action completed with install-mode=none"

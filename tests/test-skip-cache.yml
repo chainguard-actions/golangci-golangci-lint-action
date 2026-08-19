@@ -1,4 +1,4 @@
-name: Test basic golangci-lint usage
+name: Test skip-cache mode
 on:
   workflow_dispatch:
 jobs:
@@ -17,12 +17,11 @@ jobs:
         with:
           version: 'latest'
           install-mode: 'binary'
-          install-only: 'false'
           skip-cache: 'true'
           working-directory: 'tests/fixtures/simple-project'
           args: '--timeout=2m'
 
-      - name: Assert golangci-lint ran successfully
+      - name: Assert golangci-lint ran successfully with cache disabled
         run: |
-          echo "golangci-lint action completed successfully"
+          echo "golangci-lint action completed with skip-cache=true"
           echo "PASS"

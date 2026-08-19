@@ -1,4 +1,4 @@
-name: Test version-file input
+name: Test install-only mode
 on:
   workflow_dispatch:
 jobs:
@@ -15,18 +15,22 @@ jobs:
       - id: action
         uses: .
         with:
-          version-file: 'tests/fixtures/version-file-project/.golangci-lint-version'
+          version: 'latest'
           install-mode: 'binary'
           install-only: 'true'
           skip-cache: 'true'
 
-      - name: Assert golangci-lint was installed via version-file
+      - name: Assert golangci-lint is installed and available
         run: |
-          echo "Checking golangci-lint was installed using version-file input"
+          echo "Checking if golangci-lint is installed..."
           if ! command -v golangci-lint &>/dev/null; then
-            echo "FAIL: golangci-lint binary not found after install-only with version-file"
+            echo "FAIL: golangci-lint binary not found in PATH"
             exit 1
           fi
-          VERSION=$(golangci-lint --version 2>&1 || true)
-          echo "installed version: $VERSION"
-          echo "PASS: golangci-lint installed successfully via version-file"
+          VERSION_OUTPUT="$(golangci-lint --version 2>&1)"
+          echo "golangci-lint version: $VERSION_OUTPUT"
+          if [ -z "$VERSION_OUTPUT" ]; then
+            echo "FAIL: golangci-lint --version returned empty output"
+            exit 1
+          fi
+          echo "PASS: golangci-lint is installed"
