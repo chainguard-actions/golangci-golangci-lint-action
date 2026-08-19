@@ -1,0 +1,37 @@
+name: Test golangci-lint with latest version
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install Go and golangci-lint
+        run: |
+          # Install Go 1.22
+          curl -fsSL https://go.dev/dl/go1.22.12.linux-amd64.tar.gz -o /tmp/go.tar.gz
+          sudo rm -rf /usr/local/go
+          sudo tar -C /usr/local -xzf /tmp/go.tar.gz
+          export PATH="/usr/local/go/bin:$PATH"
+          echo "/usr/local/go/bin" >> $GITHUB_PATH
+          go version
+          # Install a recent golangci-lint version
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin v1.62.2
+          golangci-lint --version
+
+      - name: Run golangci-lint with latest version via install-mode none
+        id: lint
+        uses: .
+        with:
+          version: 'latest'
+          install-mode: 'none'
+          working-directory: tests/fixtures/go-project
+          skip-cache: 'true'
+          args: '--timeout=5m --no-config'
+          verify: 'false'
+
+      - name: Assert lint completed with latest version
+        run: |
+          echo "golangci-lint action completed with version=latest (install-mode=none)"
+          echo "PASS"

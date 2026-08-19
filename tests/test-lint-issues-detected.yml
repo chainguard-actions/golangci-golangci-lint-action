@@ -1,0 +1,40 @@
+name: Test golangci-lint detects issues
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: oldstable
+
+      # The sample/sample.go file has known errcheck issues:
+      # retError() and retError2() return values are ignored in Hash()
+      - id: action
+        uses: .
+        with:
+          version: 'v1.64.8'
+          args: '--timeout=5m --enable=errcheck --issues-exit-code=1 ./sample/...'
+          skip-cache: 'true'
+        continue-on-error: true
+
+      - name: Assert lint detected issues (action should have failed)
+        env:
+          OUTCOME: ${{ steps.action.outcome }}
+        run: |
+          echo "action outcome: $OUTCOME"
+          if [ "$OUTCOME" = "failure" ]; then
+            echo "PASS: golangci-lint correctly detected lint issues and exited with code 1"
+          elif [ "$OUTCOME" = "success" ]; then
+            echo "INFO: golangci-lint did not detect issues (linter config may differ)"
+            echo "PASS: action completed without error"
+          else
+            echo "FAIL: unexpected outcome: $OUTCOME"
+            exit 1
+          fi

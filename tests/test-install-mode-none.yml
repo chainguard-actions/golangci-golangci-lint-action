@@ -1,0 +1,32 @@
+name: Test golangci-lint with install-mode none
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: oldstable
+
+      - name: Pre-install golangci-lint v1.64.8
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin v1.64.8
+          golangci-lint --version
+
+      - id: action
+        uses: .
+        with:
+          install-mode: 'none'
+          args: '--timeout=5m --issues-exit-code=0 ./sample/...'
+          skip-cache: 'true'
+
+      - name: Assert lint completed with install-mode none
+        run: |
+          echo "golangci-lint action completed with install-mode=none"
+          echo "PASS: action ran without error using pre-installed golangci-lint"
