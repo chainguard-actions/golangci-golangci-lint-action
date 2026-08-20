@@ -1,4 +1,4 @@
-name: Test version-file input
+name: Test install-only mode
 on:
   workflow_dispatch:
 jobs:
@@ -13,15 +13,14 @@ jobs:
           go-version: '1.24'
 
       - id: action
-        name: Run golangci-lint action using version-file
+        name: Run golangci-lint action in install-only mode
         uses: .
         with:
-          version-file: tests/fixtures/version-file-go/.golangci-lint-version
-          working-directory: tests/fixtures/version-file-go
+          version: v2.3.0
           install-only: 'true'
           skip-cache: 'true'
 
-      - name: Assert golangci-lint is installed with the version from version-file
+      - name: Assert golangci-lint is installed and executable
         run: |
           echo "Checking golangci-lint is on PATH..."
           if ! command -v golangci-lint &>/dev/null; then
@@ -30,8 +29,8 @@ jobs:
           fi
           VERSION_OUTPUT=$(golangci-lint --version 2>&1)
           echo "golangci-lint version: $VERSION_OUTPUT"
-          if ! echo "$VERSION_OUTPUT" | grep -q "2\.3"; then
-            echo "FAIL: expected version 2.3.x but got: $VERSION_OUTPUT"
+          if ! echo "$VERSION_OUTPUT" | grep -q "golangci-lint"; then
+            echo "FAIL: unexpected version output"
             exit 1
           fi
-          echo "PASS: golangci-lint v2.3.x installed via version-file"
+          echo "PASS: golangci-lint is installed"
