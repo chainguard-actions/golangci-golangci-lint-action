@@ -12,16 +12,20 @@ jobs:
         with:
           go-version: '1.24'
 
+      - name: Create .golangci-lint-version file
+        run: |
+          echo "v2.3.0" > .golangci-lint-version
+          echo "Created .golangci-lint-version with content: $(cat .golangci-lint-version)"
+
       - id: action
-        name: Run golangci-lint action using version-file
+        name: Run golangci-lint action with version-file input
         uses: .
         with:
-          version-file: tests/fixtures/version-file-go/.golangci-lint-version
-          working-directory: tests/fixtures/version-file-go
+          version-file: .golangci-lint-version
           install-only: 'true'
           skip-cache: 'true'
 
-      - name: Assert golangci-lint is installed with the version from version-file
+      - name: Assert golangci-lint is installed at the version from version-file
         run: |
           echo "Checking golangci-lint is on PATH..."
           if ! command -v golangci-lint &>/dev/null; then
@@ -30,8 +34,12 @@ jobs:
           fi
           VERSION_OUTPUT=$(golangci-lint --version 2>&1)
           echo "golangci-lint version: $VERSION_OUTPUT"
-          if ! echo "$VERSION_OUTPUT" | grep -q "2\.3"; then
+          if ! echo "$VERSION_OUTPUT" | grep -q "golangci-lint"; then
+            echo "FAIL: unexpected version output"
+            exit 1
+          fi
+          if ! echo "$VERSION_OUTPUT" | grep -q "2.3"; then
             echo "FAIL: expected version 2.3.x but got: $VERSION_OUTPUT"
             exit 1
           fi
-          echo "PASS: golangci-lint v2.3.x installed via version-file"
+          echo "PASS: golangci-lint is installed at the correct version from version-file"
