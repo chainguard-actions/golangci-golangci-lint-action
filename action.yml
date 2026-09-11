@@ -55,7 +55,6 @@ inputs:
     default: '7'
     required: false
 runs:
-  pre: chainguard-phonehome.js
   using: "node20"
   main: "dist/run/index.js"
   post: "dist/post_run/index.js"
