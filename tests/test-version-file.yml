@@ -19,14 +19,20 @@ jobs:
           install-mode: 'binary'
           install-only: 'true'
           skip-cache: 'true'
+          working-directory: 'tests/fixtures/version-file-project'
 
-      - name: Assert golangci-lint was installed via version-file
+      - name: Assert golangci-lint was installed from version-file
         run: |
-          echo "Checking golangci-lint was installed using version-file input"
+          echo "Checking golangci-lint is installed..."
           if ! command -v golangci-lint &>/dev/null; then
-            echo "FAIL: golangci-lint binary not found after install-only with version-file"
+            echo "FAIL: golangci-lint not found on PATH"
             exit 1
           fi
           VERSION=$(golangci-lint --version 2>&1 || true)
-          echo "installed version: $VERSION"
-          echo "PASS: golangci-lint installed successfully via version-file"
+          echo "golangci-lint version: $VERSION"
+          if echo "$VERSION" | grep -q "1.64"; then
+            echo "PASS: golangci-lint installed with version from version-file (1.64.x)"
+          else
+            echo "FAIL: expected version 1.64.x but got: $VERSION"
+            exit 1
+          fi
